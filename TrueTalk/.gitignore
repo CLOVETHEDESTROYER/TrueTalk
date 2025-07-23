@@ -1,2 +1,5 @@
 # Ignore secrets file
-TrueTalk/Secrets.plist 
+TrueTalk/Secrets.plist
+TrueTalk/secrets.plist
+TrueTalk/TrueTalk/Secrets.plist
+TrueTalk/TrueTalk/secrets.plist 
