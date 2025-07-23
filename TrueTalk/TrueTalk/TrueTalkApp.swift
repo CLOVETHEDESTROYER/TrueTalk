@@ -10,6 +10,8 @@ import SwiftData
 
 @main
 struct TrueTalkApp: App {
+    @StateObject private var authManager = AuthenticationManager()
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -25,7 +27,13 @@ struct TrueTalkApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            if authManager.isAuthenticated || authManager.isGuestMode {
+                MainTabView()
+                    .environmentObject(authManager)
+            } else {
+                AuthenticationView()
+                    .environmentObject(authManager)
+            }
         }
         .modelContainer(sharedModelContainer)
     }

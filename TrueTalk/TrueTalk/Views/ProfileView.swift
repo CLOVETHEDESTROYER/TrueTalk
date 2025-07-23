@@ -2,7 +2,9 @@ import SwiftUI
 
 struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
+    @EnvironmentObject var authManager: AuthenticationManager
     @State private var showingPremiumPaywall = false
+    @State private var showingSignOutAlert = false
     
     var body: some View {
         NavigationView {
@@ -25,6 +27,16 @@ struct ProfileView: View {
             }
             .errorAlert(message: viewModel.errorMessage) {
                 viewModel.clearError()
+            }
+            .alert("Sign Out", isPresented: $showingSignOutAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Sign Out", role: .destructive) {
+                    Task {
+                        try? await authManager.signOut()
+                    }
+                }
+            } message: {
+                Text("Are you sure you want to sign out?")
             }
             .onAppear {
                 viewModel.loadUserProfile()
@@ -379,7 +391,7 @@ struct ProfileView: View {
             SettingsRow(
                 icon: "rectangle.portrait.and.arrow.right",
                 title: "Sign Out",
-                action: { viewModel.signOut() },
+                action: { showingSignOutAlert = true },
                 isDestructive: true
             )
         }

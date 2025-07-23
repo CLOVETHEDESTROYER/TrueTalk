@@ -2,12 +2,20 @@ import SwiftUI
 
 struct AskView: View {
     @StateObject private var viewModel = DatingAdviceViewModel()
+    @EnvironmentObject var authManager: AuthenticationManager
+    @State private var showQuestionLimit = false
     
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
                     headerSection
+                    
+                    // Show question limit info for guests
+                    if !authManager.isAuthenticated {
+                        questionLimitInfo
+                    }
+                    
                     personaSelector
                     inputSection
                     submitButton
@@ -25,6 +33,9 @@ struct AskView: View {
             .navigationBarTitleDisplayMode(.large)
             .errorAlert(message: viewModel.errorMessage) {
                 viewModel.clearError()
+            }
+            .sheet(isPresented: $showQuestionLimit) {
+                QuestionLimitView()
             }
         }
     }
@@ -121,10 +132,45 @@ struct AskView: View {
         }
     }
     
+    private var questionLimitInfo: some View {
+        HStack {
+            Image(systemName: "info.circle.fill")
+                .foregroundColor(.orange)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Guest Mode")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.orange)
+                
+                Text(authManager.getRemainingQuestions() == -1 ? "Unlimited questions" : "\(authManager.getRemainingQuestions()) questions remaining today")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Button("Sign Up") {
+                showQuestionLimit = true
+            }
+            .font(.caption)
+            .fontWeight(.medium)
+            .foregroundColor(.blue)
+        }
+        .padding()
+        .background(Color.orange.opacity(0.1))
+        .cornerRadius(10)
+    }
+    
     private var submitButton: some View {
         Button(action: {
-            Task {
-                await viewModel.getAdvice()
+            if authManager.canAskQuestion() {
+                Task {
+                    await viewModel.getAdvice()
+                    authManager.recordQuestionAsked()
+                }
+            } else {
+                showQuestionLimit = true
             }
         }) {
             HStack(spacing: 12) {
@@ -144,11 +190,11 @@ struct AskView: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
-                viewModel.canSubmit ? Color.primaryBlue : Color.gray
+                viewModel.canSubmit && authManager.canAskQuestion() ? Color.primaryBlue : Color.gray
             )
             .cornerRadius(16)
         }
-        .disabled(!viewModel.canSubmit)
+        .disabled(!viewModel.canSubmit || !authManager.canAskQuestion())
         .loading(viewModel.isLoading)
     }
     
