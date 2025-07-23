@@ -14,7 +14,7 @@ class DatingAdviceViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var adviceHistory: [DatingAdvice] = []
     
-    private let aiService = AIService(apiKey: "your-openai-api-key") // TODO: Move to secure storage
+    private let aiService = AIService(apiKey: Secrets.openAIAPIKey)
     
     var canSubmit: Bool {
         !userInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
