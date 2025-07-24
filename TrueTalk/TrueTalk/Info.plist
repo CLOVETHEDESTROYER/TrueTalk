@@ -60,5 +60,13 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>TrueTalk may access your camera to allow you to take profile photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>TrueTalk may access your photo library to allow you to select profile photos.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>TrueTalk may access your location to help you find nearby dating opportunities.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>TrueTalk sends notifications to keep you updated on new advice and matches.</string>
 </dict>
 </plist> 

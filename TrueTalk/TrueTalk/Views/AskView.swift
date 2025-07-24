@@ -165,6 +165,7 @@ struct AskView: View {
     private var submitButton: some View {
         Button(action: {
             if authManager.canAskQuestion() {
+                hideKeyboard()
                 Task {
                     await viewModel.getAdvice()
                     authManager.recordQuestionAsked()
